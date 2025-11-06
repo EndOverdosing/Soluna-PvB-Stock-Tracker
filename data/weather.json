@@ -1,0 +1,54 @@
+[
+    {
+        "name": "Halloween",
+        "image": "/images/weather/halloween.png"
+    },
+    {
+        "name": "Cosmic Bloom",
+        "image": "/images/weather/cosmic-bloom.png"
+    },
+    {
+        "name": "Eruption",
+        "image": "/images/weather/eruption.png"
+    },
+    {
+        "name": "Prismatic Surge",
+        "image": "/images/weather/prismatic-surge.png"
+    },
+    {
+        "name": "Reality Flip",
+        "image": "/images/weather/reality-flip.png"
+    },
+    {
+        "name": "Tung Tung Invasion",
+        "image": "/images/weather/tung-tung-invasion.png"
+    },
+    {
+        "name": "Icy Blizzard",
+        "image": "/images/weather/icy-blizzard.png"
+    },
+    {
+        "name": "Glided Awakening",
+        "image": "/images/weather/glided-awakening.png"
+    },
+    {
+        "name": "Lucky Potion",
+        "image": "/images/weather/lucky-potion.png"
+    },
+    {
+        "name": "Riot Potion",
+        "image": "/images/weather/riot-potion.png"
+    },
+    {
+        "name": "Server Luck",
+        "image": "/images/weather/server-luck.png"
+    },
+    {
+        "name": "Damage Potion",
+        "image": "/images/weather/damage-potion.png"
+    },
+    {
+        "name": "Speed Potion",
+        "image": "/images/weather/speed-potion.png"
+    }
+]

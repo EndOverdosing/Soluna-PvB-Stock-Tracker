@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Water Bucket",
+        "image": "/images/gear/water-bucket.png"
+    },
+    {
+        "name": "Frost Grenade",
+        "image": "/images/gear/frost-grenade.png"
+    },
+    {
+        "name": "Banana Gun",
+        "image": "/images/gear/banana-gun.png"
+    },
+    {
+        "name": "Frost Blower",
+        "image": "/images/gear/frost-blower.png"
+    },
+    {
+        "name": "Carrot Launcher",
+        "image": "/images/gear/carrot-launcher.png"
+    }
+]

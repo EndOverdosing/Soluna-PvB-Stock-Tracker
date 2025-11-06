@@ -1,0 +1,66 @@
+[
+    {
+        "name": "Cactus",
+        "image": "/images/plants/cactus.png"
+    },
+    {
+        "name": "Strawberry",
+        "image": "/images/plants/strawberry.png"
+    },
+    {
+        "name": "Pumpkin",
+        "image": "/images/plants/pumpkin.png"
+    },
+    {
+        "name": "Sunflower",
+        "image": "/images/plants/sunflower.png"
+    },
+    {
+        "name": "Dragon Fruit",
+        "image": "/images/plants/dragon-fruit.png"
+    },
+    {
+        "name": "Eggplant",
+        "image": "/images/plants/eggplant.png"
+    },
+    {
+        "name": "Watermelon",
+        "image": "/images/plants/watermelon.png"
+    },
+    {
+        "name": "Grape",
+        "image": "/images/plants/grape.png"
+    },
+    {
+        "name": "Cocotank",
+        "image": "/images/plants/cocotank.png"
+    },
+    {
+        "name": "Carnivorous Plant",
+        "image": "/images/plants/carnivorous-plant.png"
+    },
+    {
+        "name": "Mr. Carrot",
+        "image": "/images/plants/mr-carrot.png"
+    },
+    {
+        "name": "Tomatrio",
+        "image": "/images/plants/tomatrio.png"
+    },
+    {
+        "name": "Shroombino",
+        "image": "/images/plants/shroombino.png"
+    },
+    {
+        "name": "Mango",
+        "image": "/images/plants/mango.png"
+    },
+    {
+        "name": "King Limone",
+        "image": "/images/plants/king-limone.png"
+    },
+    {
+        "name": "Starfruit",
+        "image": "/images/plants/starfruit.png"
+    }
+]

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Soluna PvB Stock</title>
+
+    <meta name="description"
+        content="Live stock tracker for seeds and gear in Soluna PvB. Get real-time updates and set audio alerts for your favorite items.">
+    <meta property="og:title" content="Soluna PvB Stock Tracker">
+    <meta property="og:description"
+        content="Live stock tracker for seeds and gear in Soluna PvB. Get real-time updates and set audio alerts.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://soluna-pvb-stock.vercel.app">
+    <meta property="og:image" content="/images/banner.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Soluna PvB Stock Tracker">
+    <meta name="twitter:description"
+        content="Live stock tracker for seeds and gear in Soluna PvB. Get real-time updates and set audio alerts.">
+    <meta name="twitter:image" content="/images/banner.png">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PvB Stock">
+    <meta name="theme-color" content="#22C55E">
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/images/favicon.png">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="dark">
+
+    <div class="app-shell">
+        <header class="app-header">
+            <div class="header-left">
+                <div class="status-tag" id="weather-display">
+                    <i class="fa-solid fa-cloud-sun"></i>
+                    <span id="weather-status">--</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-tag" id="countdown-display">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    <span id="countdown-timer">--:--:--</span>
+                </div>
+                <button class="settings-button" id="settings-button-main"><i class="fa-solid fa-gear"></i></button>
+            </div>
+        </header>
+
+        <main class="pane-container" id="pane-container">
+            <section id="seed-pane" class="pane">
+                <div class="pane-header">
+                    <h2>Seed Stock</h2>
+                    <p>Current seeds available for purchase.</p>
+                </div>
+                <div class="item-list" id="seed-list"></div>
+            </section>
+
+            <section id="gear-pane" class="pane">
+                <div class="pane-header">
+                    <h2>Gear Stock</h2>
+                    <p>Current gear available for purchase.</p>
+                </div>
+                <div class="item-list" id="gear-list"></div>
+            </section>
+        </main>
+
+        <div id="error-container" class="error-container" style="display: none;"></div>
+
+        <div class="bottom-nav-container">
+            <nav class="bottom-bar">
+                <button class="nav-button active" data-pane="0" id="nav-seed">
+                    <i class="fa-solid fa-seedling"></i>
+                    <span>Seeds</span>
+                </button>
+                <button class="nav-button" data-pane="1" id="nav-gear">
+                    <i class="fa-solid fa-wrench"></i>
+                    <span>Gear</span>
+                </button>
+            </nav>
+            <button class="nav-button refresh-button" id="refresh-button">
+                <i class="fa-solid fa-rotate"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="settings-overlay" id="settings-overlay">
+        <div class="settings-panel" id="settings-panel">
+            <div class="settings-header">
+                <div class="settings-dragger" id="settings-dragger"></div>
+                <h3>Settings</h3>
+                <button class="settings-close-button" id="settings-close-button"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h4>Appearance</h4>
+                    <div class="settings-item">
+                        <label for="theme-toggle">Dark Mode</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="theme-toggle">
+                            <label class="slider" for="theme-toggle"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4>Sound Alerts</h4>
+                    <p class="section-description">Play a sound when a selected item or event appears.</p>
+                    <div id="plant-alerts-container" class="multiselect-container"></div>
+                    <div id="gear-alerts-container" class="multiselect-container" style="margin-top: 1rem;"></div>
+                    <div id="weather-alerts-container" class="multiselect-container" style="margin-top: 1rem;"></div>
+                </div>
+                <div class="settings-section">
+                    <h4>Test Alerts</h4>
+                    <p class="section-description">Click to test the notification sounds for your currently selected
+                        items.</p>
+                    <button id="test-alerts-button" class="action-button">Test Selected Sounds</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio-plant" src="/audios/notification.mp3"></audio>
+    <audio id="audio-gear" src="/audios/notification.mp3"></audio>
+    <audio id="audio-weather" src="/audios/notification.mp3"></audio>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
