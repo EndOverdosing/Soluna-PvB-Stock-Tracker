@@ -700,7 +700,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="predictor-info" style="text-align: right;">
                     <span class="item-name">${predictionText}</span>
-                    <div class="item-quantity" style="background-color: ${statusColor}; color: white; margin-top: 4px; display: inline-block;">
+                    <div class="item-quantity" style="background-color: ${statusColor}; color: var(--text-primary); margin-top: 4px; display: inline-block;">
                         ${p.status}
                     </div>
                 </div>`;
