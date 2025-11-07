@@ -1,22 +1,27 @@
 [
     {
         "name": "Water Bucket",
-        "image": "/images/gear/water-bucket.png"
+        "image": "/images/gear/water-bucket.png",
+        "rarity": "Rare"
     },
     {
         "name": "Frost Grenade",
-        "image": "/images/gear/frost-grenade.png"
+        "image": "/images/gear/frost-grenade.png",
+        "rarity": "Rare"
     },
     {
         "name": "Banana Gun",
-        "image": "/images/gear/banana-gun.png"
+        "image": "/images/gear/banana-gun.png",
+        "rarity": "Epic"
     },
     {
         "name": "Frost Blower",
-        "image": "/images/gear/frost-blower.png"
+        "image": "/images/gear/frost-blower.png",
+        "rarity": "Legendary"
     },
     {
         "name": "Carrot Launcher",
-        "image": "/images/gear/carrot-launcher.png"
+        "image": "/images/gear/carrot-launcher.png",
+        "rarity": "Godly"
     }
 ]

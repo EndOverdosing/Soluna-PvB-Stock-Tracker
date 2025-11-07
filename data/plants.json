@@ -1,66 +1,82 @@
 [
     {
         "name": "Cactus",
-        "image": "/images/plants/cactus.png"
+        "image": "/images/plants/cactus.png",
+        "rarity": "Rare"
     },
     {
         "name": "Strawberry",
-        "image": "/images/plants/strawberry.png"
+        "image": "/images/plants/strawberry.png",
+        "rarity": "Rare"
     },
     {
         "name": "Pumpkin",
-        "image": "/images/plants/pumpkin.png"
+        "image": "/images/plants/pumpkin.png",
+        "rarity": "Epic"
     },
     {
         "name": "Sunflower",
-        "image": "/images/plants/sunflower.png"
+        "image": "/images/plants/sunflower.png",
+        "rarity": "Epic"
     },
     {
         "name": "Dragon Fruit",
-        "image": "/images/plants/dragon-fruit.png"
+        "image": "/images/plants/dragon-fruit.png",
+        "rarity": "Legendary"
     },
     {
         "name": "Eggplant",
-        "image": "/images/plants/eggplant.png"
+        "image": "/images/plants/eggplant.png",
+        "rarity": "Legendary"
     },
     {
         "name": "Watermelon",
-        "image": "/images/plants/watermelon.png"
+        "image": "/images/plants/watermelon.png",
+        "rarity": "Mythic"
     },
     {
         "name": "Grape",
-        "image": "/images/plants/grape.png"
+        "image": "/images/plants/grape.png",
+        "rarity": "Mythic"
     },
     {
         "name": "Cocotank",
-        "image": "/images/plants/cocotank.png"
+        "image": "/images/plants/cocotank.png",
+        "rarity": "Godly"
     },
     {
         "name": "Carnivorous Plant",
-        "image": "/images/plants/carnivorous-plant.png"
+        "image": "/images/plants/carnivorous-plant.png",
+        "rarity": "Godly"
     },
     {
-        "name": "Mr. Carrot",
-        "image": "/images/plants/mr-carrot.png"
+        "name": "Mr Carrot",
+        "image": "/images/plants/mr-carrot.png",
+        "rarity": "Secret"
     },
     {
         "name": "Tomatrio",
-        "image": "/images/plants/tomatrio.png"
+        "image": "/images/plants/tomatrio.png",
+        "rarity": "Secret"
     },
     {
         "name": "Shroombino",
-        "image": "/images/plants/shroombino.png"
+        "image": "/images/plants/shroombino.png",
+        "rarity": "Secret"
     },
     {
         "name": "Mango",
-        "image": "/images/plants/mango.png"
+        "image": "/images/plants/mango.png",
+        "rarity": "Secret"
     },
     {
         "name": "King Limone",
-        "image": "/images/plants/king-limone.png"
+        "image": "/images/plants/king-limone.png",
+        "rarity": "Secret"
     },
     {
         "name": "Starfruit",
-        "image": "/images/plants/starfruit.png"
+        "image": "/images/plants/starfruit.png",
+        "rarity": "Secret"
     }
 ]

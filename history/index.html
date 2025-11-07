@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Seed Stock - Soluna PvB</title>
+    <title>History - Soluna PvB</title>
 
-    <meta name="description"
-        content="Live stock tracker for seeds in Soluna PvB. Get real-time updates and set audio alerts for your favorite items.">
+    <meta name="description" content="Historical stock data for Soluna PvB.">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -24,13 +23,8 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 
-<body>
-    <script>
-        (function () {
-            const theme = localStorage.getItem('pvb_theme') || 'dark';
-            document.body.className = theme;
-        })();
-    </script>
+<body class="dark">
+
     <aside class="sidebar">
         <div class="sidebar-header">
             <h1 class="sidebar-title">PvB Stock</h1>
@@ -83,10 +77,13 @@
         <main class="pane-container">
             <section class="pane">
                 <div class="pane-header">
-                    <h2>Seed Stock</h2>
-                    <p>Current seeds available for purchase.</p>
+                    <h2>History</h2>
+                    <p>Recent shop stock history.</p>
                 </div>
-                <div class="item-list" id="seed-list"></div>
+                <div class="item-list" id="history-list"></div>
+                <div id="history-controls" style="padding: 0 1rem 120px;">
+                    <button id="load-more-history" class="action-button" style="display: none;">Load More</button>
+                </div>
             </section>
         </main>
 

@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Seed Stock - Soluna PvB</title>
+    <title>Predictor - Soluna PvB</title>
 
-    <meta name="description"
-        content="Live stock tracker for seeds in Soluna PvB. Get real-time updates and set audio alerts for your favorite items.">
+    <meta name="description" content="Predicts upcoming secret seeds in Soluna PvB based on historical data.">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -83,10 +82,19 @@
         <main class="pane-container">
             <section class="pane">
                 <div class="pane-header">
-                    <h2>Seed Stock</h2>
-                    <p>Current seeds available for purchase.</p>
+                    <h2>Predictor</h2>
+                    <p>Analysis of past stock data.</p>
                 </div>
-                <div class="item-list" id="seed-list"></div>
+
+                <div class="predictor-banner">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>Predictions improve over time. The more historical data we collect, the more accurate the
+                        forecasts will
+                        become.</span>
+                </div>
+                
+                <div id="database-status"></div>
+                <div class="item-list" id="predictor-list"></div>
             </section>
         </main>
 
