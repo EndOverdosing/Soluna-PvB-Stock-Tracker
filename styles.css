@@ -21,7 +21,6 @@
     --shadow: rgba(100, 116, 139, 0.1);
 
     --rarity-rare: #3b82f6;
-    --rarity-uncommon: #22c55e;
     --rarity-epic: #a855f7;
     --rarity-legendary: #eab308;
     --rarity-mythic: #ec4899;
@@ -154,6 +153,7 @@ body::-webkit-scrollbar {
 .pane-header p {
     color: var(--text-secondary);
     font-size: 1rem;
+    margin-bottom: 1rem;
 }
 
 .item-list {
@@ -161,7 +161,6 @@ body::-webkit-scrollbar {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    margin-top: 2rem;
 }
 
 .item {
@@ -189,10 +188,6 @@ body::-webkit-scrollbar {
 
 .item.rare::before {
     background: var(--rarity-rare);
-}
-
-.item.uncommon::before {
-    background: var(--rarity-uncommon);
 }
 
 .item.epic::before {
@@ -236,7 +231,7 @@ body::-webkit-scrollbar {
 
 .item-name {
     font-weight: 500;
-    margin-right: 1rem;
+    margin-right: 7px;
 }
 
 .item-quantity {

@@ -14,12 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
         countdownInterval: null,
         settingsOpen: false,
         historyOpen: false,
+        initialHistoryLoaded: false,
         previousData: { seeds: [], gear: [], weather: null },
         audioPreferences: { plants: [], gear: [], weather: [], rarity: [] },
         dataLists: {
             plants: [], gear: [], weather: [],
             rarity: [
-                { name: 'Rare' }, { name: 'Uncommon' }, { name: 'Epic' },
+                { name: 'Rare' }, { name: 'Epic' },
                 { name: 'Legendary' }, { name: 'Mythic' }, { name: 'Godly' }, { name: 'Secret' }
             ]
         },
@@ -28,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
             visibleCount: 20,
             batchSize: 20,
             searchTerm: ''
-        }
+        },
+        predictionCountdowns: {}
     };
 
     const ui = {
@@ -370,6 +372,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderList(ui.seedList, shop.seeds, 'Seeds');
 
+        if (ui.predictorList && state.historyState.fullHistory.length > 0) {
+            generatePredictions(state.historyState.fullHistory, shop.seeds);
+        }
+
         if (shop.nextUpdateAt) {
             startCountdown(new Date(shop.nextUpdateAt));
         } else {
@@ -384,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (initialDistance < 1000) {
             ui.countdownTimer.textContent = "Updating...";
             if (!state.isFetching) {
-                setTimeout(fetchAllData, 3000);
+                fetchAllData();
             }
             return;
         }
@@ -393,9 +399,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const distance = nextUpdateDate - Date.now();
             if (distance < 0) {
                 clearInterval(state.countdownInterval);
-                ui.countdownTimer.textContent = "00:00:00";
+                ui.countdownTimer.textContent = "Updating...";
                 if (!state.isFetching) {
-                    setTimeout(fetchAllData, 2000);
+                    fetchAllData();
                 }
                 return;
             }
@@ -502,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchHistoryAndPredictions() {
         if (!database) return;
 
-        const historyRef = database.ref('history').limitToLast(100);
+        const historyRef = database.ref('history').limitToLast(200);
         historyRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) {
@@ -520,7 +526,14 @@ document.addEventListener('DOMContentLoaded', () => {
             state.historyState.visibleCount = state.historyState.batchSize;
 
             if (ui.historyList) renderHistory();
-            if (ui.predictorList) generatePredictions(history);
+
+            if (!state.initialHistoryLoaded && history.length > 0) {
+                if (ui.predictorList) {
+                    const currentSeeds = (state.previousData.seeds || []).map(name => ({ name }));
+                    generatePredictions(history, currentSeeds);
+                }
+                state.initialHistoryLoaded = true;
+            }
 
             if (ui.databaseStatus) {
                 const firstEntryDate = new Date(history[history.length - 1].timestamp);
@@ -553,8 +566,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 batchContainer.className = 'history-batch';
 
                 const date = new Date(batch.timestamp);
-                const dateString = date.toLocaleDateString();
-                const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const msIn5Minutes = 5 * 60 * 1000;
+                const roundedTimestamp = Math.round(date.getTime() / msIn5Minutes) * msIn5Minutes;
+                const roundedDate = new Date(roundedTimestamp);
+
+                const dateString = roundedDate.toLocaleDateString();
+                const timeString = roundedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 let batchItemsHtml = '';
                 (batch.seeds || []).forEach(item => {
@@ -562,26 +579,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!itemData) return;
 
                     batchItemsHtml += `
-                <div class="item ${itemData.rarity.toLowerCase()}">
-                    <div class="item-details">
-                        <img class="item-icon" src="${itemData.image}" alt="${itemData.name}" />
-                        <span class="item-name">${item.name}</span>
-                    </div>
-                    <span class="item-quantity">x${item.qty}</span>
-                </div>
-            `;
+    <div class="item ${itemData.rarity.toLowerCase()}">
+        <div class="item-details">
+            <img class="item-icon" src="${itemData.image}" alt="${itemData.name}" />
+            <span class="item-name">${item.name}</span>
+        </div>
+        <span class="item-quantity">x${item.qty}</span>
+    </div>
+`;
                 });
 
                 if (batchItemsHtml) {
                     batchContainer.innerHTML = `
-                <div class="batch-header">
-                    <span>${dateString}</span>
-                    <span>${timeString}</span>
-                </div>
-                <div class="batch-item-list">
-                    ${batchItemsHtml}
-                </div>
-            `;
+    <div class="batch-header">
+        <span>${dateString}</span>
+        <span>${timeString}</span>
+    </div>
+    <div class="batch-item-list">
+        ${batchItemsHtml}
+    </div>
+`;
                     ui.historyList.appendChild(batchContainer);
                 }
             });
@@ -602,35 +619,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function generatePredictions(history) {
+    function generatePredictions(history, currentShopSeeds) {
         if (!ui.predictorList) return;
+
+        Object.keys(state.predictionCountdowns).forEach(key => {
+            clearInterval(state.predictionCountdowns[key]);
+        });
+        state.predictionCountdowns = {};
+
         ui.predictorList.innerHTML = '';
 
         const itemsToPredict = state.dataLists.plants.filter(p =>
-            ['Secret', 'Mythic', 'Godly'].includes(p.rarity)
+            ['Secret', 'Godly', 'Mythic', 'Legendary', 'Epic', 'Rare'].includes(p.rarity)
         );
 
         const predictions = [];
-
-        const formatInterval = (ms) => {
-            const hours = Math.floor(ms / 3600000);
-            const minutes = Math.round((ms % 3600000) / 60000);
-            return `${hours}h ${minutes}m`;
-        };
+        const currentShopNames = (currentShopSeeds || []).map(seed => seed.name);
 
         itemsToPredict.forEach(item => {
+            const isInShop = currentShopNames.includes(item.name);
+
             const appearances = history
                 .filter(entry => (entry.seeds || []).some(seed => seed.name === item.name))
                 .map(entry => new Date(entry.timestamp).getTime())
                 .sort((a, b) => a - b);
 
-            if (appearances.length < 2) {
-                predictions.push({
-                    name: item.name,
-                    predictionTime: Infinity,
-                    details: `Last seen: ${appearances.length === 1 ? new Date(appearances[0]).toLocaleDateString() : 'Never'}. Not enough data.`,
-                    status: 'Unknown'
-                });
+            if (appearances.length < 3) {
+                if (!isInShop) {
+                    predictions.push({
+                        name: item.name,
+                        predictionTime: Infinity,
+                        lastSeen: appearances.length > 0 ? appearances[appearances.length - 1] : null,
+                        status: 'Insufficient Data',
+                        confidence: 0,
+                        isInShop: false
+                    });
+                }
                 return;
             }
 
@@ -639,30 +663,73 @@ document.addEventListener('DOMContentLoaded', () => {
                 intervals.push(appearances[i] - appearances[i - 1]);
             }
 
-            const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-            const lastAppearance = appearances[appearances.length - 1];
-            const predictedTimestamp = lastAppearance + avgInterval;
-
             const msIn5Minutes = 5 * 60 * 1000;
-            const roundedPredictionTimestamp = Math.ceil(predictedTimestamp / msIn5Minutes) * msIn5Minutes;
+
+            const roundedIntervals = intervals.map(interval =>
+                Math.round(interval / msIn5Minutes) * msIn5Minutes
+            );
+
+            const recentIntervals = roundedIntervals.slice(-5);
+            const weightedAvg = recentIntervals.reduce((sum, interval, idx) => {
+                const weight = (idx + 1) / recentIntervals.length;
+                return sum + (interval * weight);
+            }, 0) / recentIntervals.reduce((sum, _, idx) => sum + ((idx + 1) / recentIntervals.length), 0);
+
+            const roundedWeightedAvg = Math.round(weightedAvg / msIn5Minutes) * msIn5Minutes;
+
+            const stdDev = Math.sqrt(
+                recentIntervals.reduce((sum, interval) => sum + Math.pow(interval - roundedWeightedAvg, 2), 0) / recentIntervals.length
+            );
+
+            const coefficientOfVariation = stdDev / roundedWeightedAvg;
+            const confidence = Math.max(0, Math.min(100, (1 - coefficientOfVariation) * 100));
+
+            const lastAppearance = appearances[appearances.length - 1];
+            const predictedTimestamp = lastAppearance + roundedWeightedAvg;
+            const roundedPredictionTimestamp = Math.round(predictedTimestamp / msIn5Minutes) * msIn5Minutes;
+
+            const timeSinceLast = Date.now() - lastAppearance;
+            const timeUntilPrediction = roundedPredictionTimestamp - Date.now();
 
             let status;
-            const timeSinceLast = Date.now() - lastAppearance;
-            const score = timeSinceLast / avgInterval;
-
-            if (Date.now() > roundedPredictionTimestamp) {
-                status = 'Overdue';
-            } else if (score > 0.8) {
-                status = 'Expected';
+            if (isInShop) {
+                status = 'In Shop';
+            } else if (timeUntilPrediction < 0) {
+                const overdueAmount = Math.abs(timeUntilPrediction);
+                if (overdueAmount < roundedWeightedAvg * 0.5) {
+                    status = 'Due Now';
+                } else {
+                    status = 'Overdue';
+                }
+            } else if (timeUntilPrediction < msIn5Minutes * 12) {
+                status = 'Coming Soon';
+            } else if (timeSinceLast > roundedWeightedAvg * 0.7) {
+                status = 'Expected Soon';
             } else {
-                status = 'Recent';
+                status = 'Not Yet';
             }
 
-            const details = `Avg. interval: ${formatInterval(avgInterval)}. Last seen: ${new Date(lastAppearance).toLocaleDateString()}`;
-            predictions.push({ name: item.name, predictionTime: roundedPredictionTimestamp, details, status });
+            predictions.push({
+                name: item.name,
+                predictionTime: roundedPredictionTimestamp,
+                lastSeen: lastAppearance,
+                avgInterval: roundedWeightedAvg,
+                status,
+                confidence,
+                timeUntilPrediction,
+                isInShop
+            });
         });
 
-        predictions.sort((a, b) => a.predictionTime - b.predictionTime);
+        predictions.sort((a, b) => {
+            if (a.isInShop && !b.isInShop) return -1;
+            if (!a.isInShop && b.isInShop) return 1;
+
+            if (a.predictionTime === Infinity && b.predictionTime === Infinity) return 0;
+            if (a.predictionTime === Infinity) return 1;
+            if (b.predictionTime === Infinity) return -1;
+            return a.predictionTime - b.predictionTime;
+        });
 
         if (predictions.length === 0) {
             ui.predictorList.innerHTML = `<p style="padding: 1rem; color: var(--text-secondary);">No high-rarity items found to predict.</p>`;
@@ -673,38 +740,122 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemData = state.dataLists.plants.find(i => i.name === p.name);
             const el = document.createElement('div');
             el.className = `item ${itemData.rarity.toLowerCase()}`;
+            el.setAttribute('data-prediction-item', p.name);
 
-            let predictionText = 'Prediction unavailable';
             let statusColor = 'var(--bg-active)';
+            let statusText = p.status;
 
-            if (p.predictionTime !== Infinity) {
-                const predictionDate = new Date(p.predictionTime);
-                predictionText = predictionDate.toLocaleString([], {
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
-                if (p.status === 'Overdue') statusColor = 'var(--rarity-rare)';
-                if (p.status === 'Expected') statusColor = 'var(--rarity-legendary)';
+            if (p.status === 'In Shop') {
+                statusColor = '#8b5cf6';
+            } else if (p.status === 'Due Now') {
+                statusColor = '#ef4444';
+            } else if (p.status === 'Overdue') {
+                statusColor = '#dc2626';
+            } else if (p.status === 'Coming Soon') {
+                statusColor = '#f59e0b';
+            } else if (p.status === 'Expected Soon') {
+                statusColor = '#10b981';
+            } else if (p.status === 'Insufficient Data') {
+                statusColor = 'var(--text-secondary)';
             }
 
+            let countdownText = '';
+            if (p.isInShop) {
+                countdownText = 'Available now';
+            } else if (p.predictionTime !== Infinity) {
+                const timeRemaining = p.predictionTime - Date.now();
+                if (timeRemaining > 0) {
+                    const hours = Math.floor(timeRemaining / 3600000);
+                    const minutes = Math.floor((timeRemaining % 3600000) / 60000);
+                    countdownText = `in ${hours}h ${minutes}m`;
+                } else {
+                    const overdueTime = Math.abs(timeRemaining);
+                    const hours = Math.floor(overdueTime / 3600000);
+                    const minutes = Math.floor((overdueTime % 3600000) / 60000);
+                    countdownText = `${hours}h ${minutes}m ago`;
+                }
+            } else {
+                countdownText = 'Not enough data';
+            }
+
+            const confidenceText = p.confidence > 0 ? `${Math.round(p.confidence)}% confidence` : '';
+
             el.innerHTML = `
-                <div class="item-details">
-                    <img class="item-icon" src="${itemData.image}" alt="${itemData.name}" />
-                    <div>
-                        <span class="item-name">${itemData.name}</span>
-                        <div style="font-size: 0.8rem; color: var(--text-secondary);">${p.details}</div>
+            <div class="item-details">
+                <img class="item-icon" src="${itemData.image}" alt="${itemData.name}" />
+                <div>
+                    <span class="item-name">${itemData.name}</span>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
+                        ${confidenceText}
                     </div>
                 </div>
-                <div class="predictor-info" style="text-align: right;">
-                    <span class="item-name">${predictionText}</span>
-                    <div class="item-quantity" style="background-color: ${statusColor}; color: var(--text-primary); margin-top: 4px; display: inline-block;">
-                        ${p.status}
-                    </div>
-                </div>`;
+            </div>
+            <div class="predictor-info" style="text-align: right;">
+                <span class="item-name" data-countdown="${p.name}">${countdownText}</span>
+                <div class="item-quantity" style="background-color: ${statusColor}; color: white; margin-top: 4px; margin-left: 5px; display: inline-block; padding: 4px 8px; border-radius: 100px; font-size: 0.75rem; font-weight: 600;">
+                    ${statusText}
+                </div>
+            </div>`;
             ui.predictorList.appendChild(el);
+
+            if (p.predictionTime !== Infinity && !p.isInShop) {
+                const countdownInterval = setInterval(() => {
+                    const countdownEl = ui.predictorList.querySelector(`[data-countdown="${p.name}"]`);
+                    if (!countdownEl) {
+                        clearInterval(countdownInterval);
+                        return;
+                    }
+
+                    const currentShopCheck = (state.previousData.seeds || []).includes(p.name);
+
+                    if (currentShopCheck) {
+                        countdownEl.textContent = 'Available now';
+                        const itemEl = ui.predictorList.querySelector(`[data-prediction-item="${p.name}"]`);
+                        if (itemEl) {
+                            const statusBadge = itemEl.querySelector('.item-quantity');
+                            if (statusBadge) {
+                                statusBadge.textContent = 'In Shop';
+                                statusBadge.style.backgroundColor = '#8b5cf6';
+                            }
+                        }
+                        clearInterval(countdownInterval);
+                        return;
+                    }
+
+                    const timeRemaining = p.predictionTime - Date.now();
+                    let newCountdownText = '';
+
+                    if (timeRemaining > 0) {
+                        const hours = Math.floor(timeRemaining / 3600000);
+                        const minutes = Math.floor((timeRemaining % 3600000) / 60000);
+                        newCountdownText = `in ${hours}h ${minutes}m`;
+                    } else {
+                        const overdueTime = Math.abs(timeRemaining);
+                        const hours = Math.floor(overdueTime / 3600000);
+                        const minutes = Math.floor((overdueTime % 3600000) / 60000);
+                        newCountdownText = `${hours}h ${minutes}m ago`;
+
+                        const itemEl = ui.predictorList.querySelector(`[data-prediction-item="${p.name}"]`);
+                        if (itemEl) {
+                            const statusBadge = itemEl.querySelector('.item-quantity');
+                            if (statusBadge) {
+                                const overdueAmount = Math.abs(timeRemaining);
+                                if (overdueAmount < (p.avgInterval || 0) * 0.5) {
+                                    statusBadge.textContent = 'Due Now';
+                                    statusBadge.style.backgroundColor = '#ef4444';
+                                } else {
+                                    statusBadge.textContent = 'Overdue';
+                                    statusBadge.style.backgroundColor = '#dc2626';
+                                }
+                            }
+                        }
+                    }
+
+                    countdownEl.textContent = newCountdownText;
+                }, 60000);
+
+                state.predictionCountdowns[p.name] = countdownInterval;
+            }
         });
     }
 
