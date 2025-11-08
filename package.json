@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/EndOverdosing/Soluna-PvB-Stock-Tracker#readme",
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
