@@ -1,4 +1,4 @@
-export default function handler(request, response) {
+module.exports = (request, response) => {
     const firebaseConfig = {
         apiKey: process.env.PUBLIC_FIREBASE_API_KEY,
         authDomain: process.env.PUBLIC_FIREBASE_AUTH_DOMAIN,

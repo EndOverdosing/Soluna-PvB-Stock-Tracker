@@ -19,6 +19,9 @@
     "url": "https://github.com/EndOverdosing/Soluna-PvB-Stock-Tracker/issues"
   },
   "homepage": "https://github.com/EndOverdosing/Soluna-PvB-Stock-Tracker#readme",
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "dotenv": "^17.2.3",
     "firebase-admin": "^13.6.0"
