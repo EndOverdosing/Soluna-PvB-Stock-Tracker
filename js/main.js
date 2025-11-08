@@ -257,7 +257,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayError(message) {
         ui.errorContainer.textContent = message;
-        ui.errorContainer.style.display = 'block';
+        ui.errorContainer.classList.add('show');
+
+        setTimeout(() => {
+            ui.errorContainer.classList.remove('show');
+        }, 5000);
     }
 
     async function fetchAllData() {
@@ -265,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.isFetching = true;
         if (ui.desktopRefreshButton) ui.desktopRefreshButton.classList.add('loading');
         if (ui.mobileRefreshButton) ui.mobileRefreshButton.classList.add('loading');
-        ui.errorContainer.style.display = 'none';
+        ui.errorContainer.classList.remove('show');
 
         try {
             const [weather, shop] = await Promise.all([
@@ -586,12 +590,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 batchContainer.className = 'history-batch';
 
                 const date = new Date(batch.timestamp);
-                const msIn5Minutes = 5 * 60 * 1000;
-                const roundedTimestamp = Math.round(date.getTime() / msIn5Minutes) * msIn5Minutes;
-                const roundedDate = new Date(roundedTimestamp);
 
-                const dateString = roundedDate.toLocaleDateString();
-                const timeString = roundedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const dateString = date.toLocaleDateString();
+                const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 let batchItemsHtml = '';
                 (batch.seeds || []).forEach(item => {

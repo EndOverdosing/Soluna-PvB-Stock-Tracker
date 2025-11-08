@@ -336,17 +336,26 @@ body::-webkit-scrollbar {
 
 .error-container {
     position: fixed;
-    bottom: calc(1.5rem + 90px + env(safe-area-inset-bottom));
+    top: calc(1.5rem + env(safe-area-inset-top));
     left: 1.5rem;
     right: 1.5rem;
     padding: 1rem 1.25rem;
-    background-color: #3f1212;
-    color: #f87171;
-    border: 1px solid #5b2121;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
     border-radius: var(--radius-card);
     font-weight: 500;
     text-align: center;
     z-index: 100;
+    box-shadow: 0 10px 30px -5px var(--shadow);
+    transform: translateY(-200%);
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: none;
+}
+
+.error-container.show {
+    transform: translateY(0);
+    display: block;
 }
 
 .settings-overlay {

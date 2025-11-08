@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>404 - Page Not Found</title>
+
+    <meta name="description"
+        content="Live stock tracker for seeds in Soluna PvB. Get real-time updates and set audio alerts for your favorite items.">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PvB Stock">
+    <meta name="theme-color" content="#22C55E">
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/images/favicon.png">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .not-found-container {
+        max-width: 400px;
+    }
+
+    .not-found-container h1 {
+        font-size: 4rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .not-found-container p {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    .home-button {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background-color: var(--accent);
+        color: var(--text-primary);
+        border-radius: var(--radius-pill);
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color var(--transition-fast);
+    }
+
+    .home-button:hover {
+        background-color: color-mix(in srgb, var(--accent) 85%, black);
+    }
+</style>
+</head>
+
+<body class="dark">
+    <div class="not-found-container">
+        <h1>404</h1>
+        <p>The page you're looking for couldn't be found.</p>
+        <a href="/" class="home-button">Go to Homepage</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const theme = localStorage.getItem('pvb_theme') || 'dark';
+            document.body.className = theme;
+        });
+    </script>
+</body>
+
+</html>
