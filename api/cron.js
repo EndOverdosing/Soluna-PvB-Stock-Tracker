@@ -15,6 +15,7 @@ function initializeFirebaseAdmin() {
 }
 
 module.exports = async function handler(request, response) {
+    console.log('Cron function handler invoked at:', new Date().toISOString());
     try {
         initializeFirebaseAdmin();
         const database = admin.database();
