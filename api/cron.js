@@ -15,7 +15,6 @@ function initializeFirebaseAdmin() {
 }
 
 module.exports = async function handler(request, response) {
-    console.log('Cron function handler invoked at:', new Date().toISOString());
     try {
         initializeFirebaseAdmin();
         const database = admin.database();
@@ -36,7 +35,6 @@ module.exports = async function handler(request, response) {
             throw new Error(`API request failed: ${shopResponse.status}`);
         }
         const shopData = await shopResponse.json();
-        console.log('Raw shop data from API:', JSON.stringify(shopData));
         const currentSeeds = (shopData.seeds?.map(s => s.name) || []).sort();
         console.log('Current seeds from API:', JSON.stringify(currentSeeds));
 
