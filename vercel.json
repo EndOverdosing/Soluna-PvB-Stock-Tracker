@@ -4,5 +4,11 @@
             "src": "/api/cron.js",
             "use": "@vercel/node"
         }
+    ],
+    "rewrites": [
+        {
+            "source": "/api/cron",
+            "destination": "/api/cron.js"
+        }
     ]
 }
