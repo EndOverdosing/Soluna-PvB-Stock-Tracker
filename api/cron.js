@@ -1,9 +1,4 @@
-import admin from 'firebase-admin';
-import dotenv from 'dotenv';
-import path from 'path';
-
-const envPath = path.resolve(process.cwd(), '.env.development.local');
-dotenv.config({ path: envPath });
+const admin = require('firebase-admin');
 
 function initializeFirebaseAdmin() {
     if (!admin.apps.length) {
@@ -19,11 +14,12 @@ function initializeFirebaseAdmin() {
     }
 }
 
-export default async function handler(request, response) {
+module.exports = async function handler(request, response) {
     try {
         initializeFirebaseAdmin();
         const database = admin.database();
 
+        console.log('Fetching last entry from database...');
         const lastEntrySnapshot = await database.ref('history').orderByChild('timestamp').limitToLast(1).once('value');
         const lastEntryData = lastEntrySnapshot.val();
         let previousSeeds = [];
@@ -31,25 +27,33 @@ export default async function handler(request, response) {
             const key = Object.keys(lastEntryData)[0];
             previousSeeds = (lastEntryData[key].seeds?.map(s => s.name) || []).sort();
         }
+        console.log('Previous seeds from DB:', JSON.stringify(previousSeeds));
 
+        console.log('Fetching new data from API...');
         const shopResponse = await fetch('https://plantsvsbrainrot.com/api/seed-shop.php');
         if (!shopResponse.ok) {
             throw new Error(`API request failed: ${shopResponse.status}`);
         }
         const shopData = await shopResponse.json();
+        console.log('Raw shop data from API:', JSON.stringify(shopData));
         const currentSeeds = (shopData.seeds?.map(s => s.name) || []).sort();
+        console.log('Current seeds from API:', JSON.stringify(currentSeeds));
 
         const areSeedsSame = JSON.stringify(currentSeeds) === JSON.stringify(previousSeeds);
+        console.log(`Are seeds the same? ${areSeedsSame}`);
 
         if (!areSeedsSame && currentSeeds.length > 0) {
+            console.log('New data found. Saving to database...');
             const timestamp = new Date().toISOString();
             const entry = {
                 timestamp,
                 seeds: shopData.seeds || [],
             };
             await database.ref('history').push(entry);
+            console.log('Successfully saved new data.');
             return response.status(200).json({ message: 'New data saved.' });
         } else {
+            console.log('No new data to save.');
             return response.status(200).json({ message: 'No new data.' });
         }
     } catch (error) {
