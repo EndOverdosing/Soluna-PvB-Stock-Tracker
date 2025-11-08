@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
         historyCloseButton: getEl('history-close-button'),
         historySearchInput: getEl('history-search-input'),
         themeToggle: getEl('theme-toggle'),
-        testAlertsButton: getEl('test-alerts-button')
+        testAlertsButton: getEl('test-alerts-button'),
+        testErrorButton: getEl('test-error-button')
     };
 
     async function fetchFirebaseConfig() {
@@ -165,6 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (ui.testAlertsButton) ui.testAlertsButton.addEventListener('click', testAlerts);
+
+        if (ui.testErrorButton) {
+            ui.testErrorButton.addEventListener('click', () => {
+                displayError("This is a test error notification.");
+            });
+        }
 
         if (ui.themeToggle) {
             ui.themeToggle.addEventListener('change', (e) => {
