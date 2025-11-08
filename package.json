@@ -4,7 +4,8 @@
   "description": "This is a web application that displays live in-game information for \"Plants vs Brainrots,\" including the current weather and items available in the Seed and Gear shops. The UI is designed to be clean, modern, and responsive.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node cron.js",
+    "build": "echo 'No build step required'"
   },
   "repository": {
     "type": "git",

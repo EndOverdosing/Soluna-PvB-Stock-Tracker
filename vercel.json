@@ -1,14 +1,12 @@
 {
-    "builds": [
-        {
-            "src": "/api/cron.js",
-            "use": "@vercel/node"
-        }
-    ],
     "rewrites": [
         {
             "source": "/api/cron",
-            "destination": "/api/cron.js"
+            "destination": "/cron.js"
+        },
+        {
+            "source": "/api/config",
+            "destination": "/config.js"
         }
     ]
 }
