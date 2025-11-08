@@ -1,0 +1,25 @@
+{
+  "name": "soluna-pvb-stock-tracker",
+  "version": "1.0.0",
+  "description": "This is a web application that displays live in-game information for \"Plants vs Brainrots,\" including the current weather and items available in the Seed and Gear shops. The UI is designed to be clean, modern, and responsive.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EndOverdosing/Soluna-PvB-Stock-Tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/EndOverdosing/Soluna-PvB-Stock-Tracker/issues"
+  },
+  "homepage": "https://github.com/EndOverdosing/Soluna-PvB-Stock-Tracker#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "firebase-admin": "^13.6.0"
+  }
+}

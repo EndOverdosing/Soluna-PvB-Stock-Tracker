@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         historyOpen: false,
         initialHistoryLoaded: false,
         previousData: { seeds: [], gear: [], weather: null },
+        currentShopSeeds: [],
         audioPreferences: { plants: [], gear: [], weather: [], rarity: [] },
         dataLists: {
             plants: [], gear: [], weather: [],
@@ -272,9 +273,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchWithProxy(API_ENDPOINTS.shop)
             ]);
 
+            state.currentShopSeeds = shop.seeds || [];
+
             checkAndPlayAlerts(shop, weather);
             updateUI(weather, shop);
-            saveToDatabase(shop);
+            await saveToDatabase(shop);
 
             state.previousData.seeds = shop.seeds?.map(s => s.name) || [];
             state.previousData.weather = weather?.name || null;
@@ -379,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (shop.nextUpdateAt) {
             startCountdown(new Date(shop.nextUpdateAt));
         } else {
+            console.warn("[Countdown] API response did not include 'nextUpdateAt'. Timer cannot be started.");
             ui.countdownTimer.textContent = 'N/A';
         }
     }
@@ -386,22 +390,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function startCountdown(nextUpdateDate) {
         if (state.countdownInterval) clearInterval(state.countdownInterval);
 
-        const initialDistance = nextUpdateDate - Date.now();
-        if (initialDistance < 1000) {
+        const updateDate = new Date(nextUpdateDate);
+        console.log(`[Countdown] Starting countdown. Target time (local): ${updateDate.toLocaleString()}. Now: ${new Date().toLocaleString()}`);
+
+        if (isNaN(updateDate.getTime()) || updateDate - Date.now() < 1000) {
             ui.countdownTimer.textContent = "Updating...";
+            if (isNaN(updateDate.getTime())) {
+                console.error("[Countdown] Invalid date provided to startCountdown. API may have sent a malformed timestamp.");
+            } else {
+                console.log("[Countdown] Target time is in the past. Forcing refresh.");
+            }
+
             if (!state.isFetching) {
-                fetchAllData();
+                setTimeout(fetchAllData, 5000);
             }
             return;
         }
 
         const update = () => {
-            const distance = nextUpdateDate - Date.now();
+            const distance = updateDate - Date.now();
             if (distance < 0) {
                 clearInterval(state.countdownInterval);
                 ui.countdownTimer.textContent = "Updating...";
+                console.log("[Countdown] Timer expired. Forcing refresh.");
                 if (!state.isFetching) {
-                    fetchAllData();
+                    setTimeout(fetchAllData, 5000);
                 }
                 return;
             }
@@ -485,14 +498,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function saveToDatabase(shopData) {
+    async function saveToDatabase(shopData) {
         if (!database) return;
 
         const currentSeeds = (shopData.seeds?.map(s => s.name) || []).sort();
-        const previousSeeds = ([...(state.previousData.seeds || [])]).sort();
+        if (currentSeeds.length === 0) return;
+
+        const lastEntrySnapshot = await database.ref('history').orderByChild('timestamp').limitToLast(1).once('value');
+        const lastEntryData = lastEntrySnapshot.val();
+        let previousSeeds = [];
+
+        if (lastEntryData) {
+            const key = Object.keys(lastEntryData)[0];
+            previousSeeds = (lastEntryData[key].seeds?.map(s => s.name) || []).sort();
+        }
 
         const areSeedsSame = JSON.stringify(currentSeeds) === JSON.stringify(previousSeeds);
-
         if (areSeedsSame) {
             return;
         }
@@ -529,8 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!state.initialHistoryLoaded && history.length > 0) {
                 if (ui.predictorList) {
-                    const currentSeeds = (state.previousData.seeds || []).map(name => ({ name }));
-                    generatePredictions(history, currentSeeds);
+                    generatePredictions(history, state.currentShopSeeds);
                 }
                 state.initialHistoryLoaded = true;
             }
@@ -806,7 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
 
-                    const currentShopCheck = (state.previousData.seeds || []).includes(p.name);
+                    const currentShopCheck = state.currentShopSeeds.some(seed => seed.name === p.name);
 
                     if (currentShopCheck) {
                         countdownEl.textContent = 'Available now';
