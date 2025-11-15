@@ -672,7 +672,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .map(entry => new Date(entry.timestamp).getTime())
                 .sort((a, b) => a - b);
 
-            if (appearances.length < 3) {
+            if (appearances.length < 2) {
                 if (!isInShop) {
                     predictions.push({
                         name: item.name,
@@ -788,9 +788,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             let countdownText = '';
-            if (p.isInShop) {
-                countdownText = 'Available now';
-            } else if (p.predictionTime !== Infinity) {
+            if (p.isInShop || p.predictionTime === Infinity) {
+                countdownText = '';
+            } else {
                 const timeRemaining = p.predictionTime - Date.now();
                 if (timeRemaining > 0) {
                     const hours = Math.floor(timeRemaining / 3600000);
@@ -802,8 +802,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const minutes = Math.floor((overdueTime % 3600000) / 60000);
                     countdownText = `${hours}h ${minutes}m ago`;
                 }
-            } else {
-                countdownText = 'Not enough data';
             }
 
             const confidenceText = p.confidence > 0 ? `${Math.round(p.confidence)}% confidence` : '';
@@ -837,7 +835,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const currentShopCheck = state.currentShopSeeds.some(seed => seed.name === p.name);
 
                     if (currentShopCheck) {
-                        countdownEl.textContent = 'Available now';
+                        countdownEl.textContent = '';
                         const itemEl = ui.predictorList.querySelector(`[data-prediction-item="${p.name}"]`);
                         if (itemEl) {
                             const statusBadge = itemEl.querySelector('.item-quantity');
